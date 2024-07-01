@@ -1,6 +1,7 @@
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
+var qs = require('querystring');
  
 function templateHTML(list, title, description){
   return `
@@ -13,6 +14,7 @@ function templateHTML(list, title, description){
           <body>
             <h1><a href="/">WEB</a></h1>
             ${list}
+            <a href="/create">create</a>  // pathname = /create
             <h2>${title}</h2>
             <p>${description}</p>
           </body>
@@ -35,6 +37,7 @@ var app = http.createServer(function(request,response){
     var _url = request.url;
     var queryData = url.parse(_url, true).query;
     var pathname = url.parse(_url, true).pathname;
+    console.log(pathname);
     if(pathname === '/'){
       if(queryData.id === undefined){
  
@@ -60,7 +63,38 @@ var app = http.createServer(function(request,response){
           });
         });
       }
-    } else {
+    } else if(pathname === "/create"){
+      fs.readdir('./data', function(error, filelist){
+        var title = 'Web - create';
+        var list = makelist(filelist);
+        var template = templateHTML(list, title,  
+          `
+          <form action="http://localhost:3000/create_process" method = "post">
+            <p><input type="text" name="title" placeholder="title"></p>
+            <p>
+                <textarea name="description" placeholder="description"></textarea>
+            </p>
+            <p>
+                <input type="submit">
+            </p>
+          </form>
+          `
+        );
+        response.writeHead(200);
+        response.end(template);
+      });
+    } else if(pathname==='/create_process'){
+      var body = ``;
+      request.on('data',function(data){ 
+        body += data; //정보가 들어올 때마다 정보 수신
+      });
+      request.on('end',function(){ //정보 들어올 때마다 정보 수신 끝
+        var post = qs.parse(body); //post.title, post.body
+        console.log(post);
+      })
+      response.writeHead(200);
+      response.end('success');
+    }else {
       response.writeHead(404);
       response.end('Not found');
     }

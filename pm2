@@ -1,0 +1,13 @@
+npm install pm2 -g
+
+
+pm2 start main.js
+
+
+pm2 stop main
+
+
+pm2 start main.js --watch  //코드 수정 시 실시간 반영
+
+
+pm2 log    // 특이사항 보기
