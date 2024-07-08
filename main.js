@@ -60,7 +60,12 @@ var app = http.createServer(function(request,response){
           fs.readFile(`data/${queryData.id}.txt`, 'utf8', function(err, description){
             var title = queryData.id;
             var template = templateHTML(list, title, description,`
-              <a href="/create">create</a>  <a href="/update?id=${title}">update</a>`
+              <a href="/create">create</a>  
+              <a href="/update?id=${title}">update</a>
+              <form action="delete_process" method="post">
+              <input type = "hidden", name="id" value="${title}">
+              <input type = "submit" value="delete">
+              </form>`
             );
             response.writeHead(200);
             response.end(template);
@@ -92,6 +97,7 @@ var app = http.createServer(function(request,response){
       request.on('data',function(data){ 
         body += data; //정보가 들어올 때마다 정보 수신
       });
+      console.log(body);
       request.on('end',function(){ //정보 들어올 때마다 정보 수신 끝
         var post = qs.parse(body); //post.title, post.body
         var title = post.title;
@@ -148,6 +154,31 @@ var app = http.createServer(function(request,response){
         // })
       })
      } 
+     else if(pathname==="/delete_process"){
+      var body = ``; 
+      request.on('data',function(data){ 
+        body += data; //정보가 들어올 때마다 정보 수신
+      });
+
+      console.log(body);
+      request.on('end',function(){ //정보 들어올 때마다 정보 수신 끝
+        var post = qs.parse(body); //post.title, post.body]
+        var id = post.id;
+        
+        fs.unlink(`data/${id}.txt`, (err) => {
+          if (err) {
+            console.error(`Error deleting the file: ${err}`);
+            return;
+          }
+          console.log('File has been deleted');
+        });
+        
+      
+   
+       
+      })
+
+     }
      else {
       response.writeHead(404);
       response.end('Not found');
