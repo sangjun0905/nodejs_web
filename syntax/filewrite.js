@@ -14,3 +14,7 @@ fs.writeFile(filePath, data, (err) => {
   }
   console.log(`파일 ${filePath}에 데이터가 성공적으로 쓰여졌습니다.`);
 });
+
+
+
+console.log(__filename); // current file path

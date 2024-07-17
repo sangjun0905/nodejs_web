@@ -2,6 +2,7 @@ var http = require('http');
 var fs = require('fs');
 var url = require('url');
 var qs = require('querystring');
+var path = require('path');
 
 var template = require('./lib/template.js');
  
@@ -28,9 +29,10 @@ var app = http.createServer(function(request,response){
  
       } else {
         fs.readdir('./data', function(error, filelist){
+          var filteredId = path.parse(queryData.id).base; //경로 세탁
           var list = template.list(filelist);
-          fs.readFile(`data/${queryData.id}.txt`, 'utf8', function(err, description){
-            var title = queryData.id;
+          fs.readFile(`data/${filteredId}.txt`, 'utf8', function(err, description){
+            var title = queryData.id; 
             var html = template.html(list, title, description,`
               <a href="/create">create</a>  
               <a href="/update?id=${title}">update</a>
@@ -82,7 +84,8 @@ var app = http.createServer(function(request,response){
     } else if(pathname ==="/update"){
       fs.readdir('./data', function(error, filelist){
         var list = makelist(filelist);
-        fs.readFile(`data/${queryData.id}.txt`, 'utf8', function(err, description){
+        var filteredId = path.parse(queryDatd.id).base; //경로 세탁
+        fs.readFile(`data/${filteredId}.txt`, 'utf8', function(err, description){
           var title = queryData.id;
           var html = template.html(list, title, 
             ` 
@@ -137,8 +140,9 @@ var app = http.createServer(function(request,response){
       request.on('end',function(){ //정보 들어올 때마다 정보 수신 끝
         var post = qs.parse(body); //post.title, post.body]
         var id = post.id;
+        var filteredId = path.parse(id).base; //경로 세탁
         
-        fs.unlink(`data/${id}.txt`, (err) => {
+        fs.unlink(`data/${filteredId}.txt`, (err) => {
           if (err) {
             console.error(`Error deleting the file: ${err}`);
             return;
