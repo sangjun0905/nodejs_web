@@ -1,0 +1,5 @@
+위험 태그들을 미사용 처리 하는 작업 (특정 태그들을 통해 사용자가 서버 코드에 영향을 줌)
+npm sanitize-html 이용
+
+npm init
+npm install -S sanitize-html              // -S 란 사용자 로컬에 슬 파일을 의미
