@@ -3,6 +3,7 @@ var fs = require('fs');
 var url = require('url');
 var qs = require('querystring');
 var path = require('path');
+const sanitizeHtml = require('sanitize-html');
 
 var template = require('./lib/template.js');
  
@@ -32,12 +33,16 @@ var app = http.createServer(function(request,response){
           var filteredId = path.parse(queryData.id).base; //경로 세탁
           var list = template.list(filelist);
           fs.readFile(`data/${filteredId}.txt`, 'utf8', function(err, description){
-            var title = queryData.id; 
+            var title = queryData.id;
+            var sanitizedTitle = sanitizeHtml(title);
+            var sanitizedDescription = sanitizeHtml(description,{
+              allowedTags:['b','h1']
+            });
             var html = template.html(list, title, description,`
               <a href="/create">create</a>  
-              <a href="/update?id=${title}">update</a>
+              <a href="/update?id=${sanitizedTitle}">update</a>
               <form action="delete_process" method="post">
-              <input type = "hidden", name="id" value="${title}">
+              <input type = "hidden", name="id" value="${sanitizedDescription}">
               <input type = "submit" value="delete">
               </form>`
             );
@@ -83,8 +88,8 @@ var app = http.createServer(function(request,response){
       })
     } else if(pathname ==="/update"){
       fs.readdir('./data', function(error, filelist){
-        var list = makelist(filelist);
-        var filteredId = path.parse(queryDatd.id).base; //경로 세탁
+        var list = template.list(filelist);
+        var filteredId = path.parse(queryData.id).base; //경로 세탁
         fs.readFile(`data/${filteredId}.txt`, 'utf8', function(err, description){
           var title = queryData.id;
           var html = template.html(list, title, 
