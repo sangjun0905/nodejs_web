@@ -7,7 +7,16 @@ pm2 start main.js
 pm2 stop main
 
 
-pm2 start main.js --watch  //코드 수정 시 실시간 반영
+pm2 start main.js --watch  //코드 수정 시 실시간 반영 
++ "--no-demon" : daemon(백그라운드로 실행되는 프로그램들)
+
+pm2 start main.js --watch --ignore-watch="data/*" --no-demon 
+//파일 추가 및 수정 되어도 pm2 꺼졌다 켜지는 것 방지
+
 
 
 pm2 log    // 특이사항 보기
+
+
+pm2 kill // pm2로 켜진 것들 모두 끄기
+
